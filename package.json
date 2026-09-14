@@ -1,0 +1,27 @@
+{
+  "name": "kashrock",
+  "version": "0.1.0",
+  "description": "Official JavaScript SDK for the KashRock esports API — props, odds, matches, and scores.",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    }
+  },
+  "files": ["src", "LICENSE", "README.md"],
+  "keywords": ["esports", "api", "cs2", "valorant", "dota", "props", "odds", "kashrock"],
+  "homepage": "https://www.kashrock.com",
+  "bugs": { "url": "https://github.com/kashrockapi/kashrock-js/issues" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kashrockapi/kashrock-js.git"
+  },
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test"
+  }
+}
