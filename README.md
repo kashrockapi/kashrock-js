@@ -1,5 +1,7 @@
 # KashRock JavaScript SDK
 
+[![Listed on MCP Market](https://mcpmarket.com/badge/server/kashrock.svg)](https://mcpmarket.com/server/kashrock?utm_source=readme&utm_medium=badge "Listed on MCP Market")
+
 Official JS client for the KashRock esports API.
 
 Props, odds, matches, live scores, and history — one key, normalized IDs.
