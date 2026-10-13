@@ -11,10 +11,29 @@ export declare class KashRockPlanError extends KashRockError {
 }
 export declare class KashRockRateLimitError extends KashRockError {}
 
+export declare class V7 {
+  meta(params?: Json): Promise<Json>
+  matches(sport: string, params?: Json & { ids?: string | string[] }): Promise<Json>
+  props(sport: string, params?: Json): Promise<Json>
+  lines(sport: string, params?: Json): Promise<Json>
+  parlays(sport: string, book: string, params?: Json): Promise<Json>
+  flow(sport: string, params?: Json): Promise<Json>
+  live(sport: string, params?: Json): Promise<Json>
+  players(sport: string, params?: Json & { ids?: string | string[] }): Promise<Json>
+  teams(sport: string, params?: Json & { ids?: string | string[] }): Promise<Json>
+  history(sport: string, params?: Json): Promise<Json>
+  results(sport: string, params?: Json): Promise<Json>
+  breakdown(sport: string, params?: Json): Promise<Json>
+  breakdownIndex(sport: string, params?: Json): Promise<Json>
+  breakdownPublished(sport: string, kind: string, slug: string, params?: Json): Promise<Json>
+}
+
 export declare const DEFAULT_BASE: string
 
 export declare class KashRock {
   constructor(apiKey?: string, opts?: { baseUrl?: string; timeout?: number })
+  /** The V7 routes. Prefer these over the V6 methods below. */
+  readonly v7: V7
   me(): Promise<Json>
   books(): Promise<Json>
   props(sport: string, params?: Json): Promise<Json>

@@ -30,16 +30,23 @@ export class KashRockRateLimitError extends KashRockError {
 }
 
 export function raiseForStatus(status, body) {
+  // A V7 refusal nests one shape under "error"; V6 serves a flat "detail".
+  const code = typeof body?.error?.code === "string" ? body.error.code : ""
   const text =
-    typeof body?.detail === "string"
+    typeof body?.error?.message === "string"
+      ? body.error.message
+      : typeof body?.detail === "string"
       ? body.detail
       : body?.detail
         ? JSON.stringify(body.detail)
         : typeof body === "string"
           ? body
           : JSON.stringify(body)
-  const opts = { status, body }
-  if ((status === 401 || status === 403) && /plan/i.test(text)) {
+  const opts = { status, body, upgradeUrl: body?.error?.upgrade_url }
+  if (code === "rate_limited" || code === "quota_exceeded") {
+    throw new KashRockRateLimitError(text, opts)
+  }
+  if (code === "plan_required" || ((status === 401 || status === 403) && /plan/i.test(text))) {
     throw new KashRockPlanError(text, opts)
   }
   if (status === 401 || status === 403) throw new KashRockAuthError(text, opts)

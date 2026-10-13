@@ -1,4 +1,5 @@
 import { KashRockAuthError, raiseForStatus } from "./errors.js"
+import { V7 } from "./v7.js"
 
 export const DEFAULT_BASE = "https://kashrock.up.railway.app"
 
@@ -22,6 +23,8 @@ export class KashRock {
     this.apiKey = apiKey
     this.baseUrl = baseUrl.replace(/\/$/, "")
     this.timeout = timeout
+    /** The V7 routes. Prefer these: the methods on this class call V6, sunset 12 December 2026. */
+    this.v7 = new V7(this)
   }
 
   async _get(path, params) {
