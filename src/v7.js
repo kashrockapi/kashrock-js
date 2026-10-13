@@ -40,8 +40,8 @@ export class V7 {
 
   /**
    * Fixtures, in-progress and finished matches for one sport, or `sport = "all"`.
-   * `ids` takes one kr_match_id or up to 100. `include` adds boxscore, prep, veto, maps, player_board,
-   * lines, streams or h2h.
+   * `ids` takes one kr_match_id or up to 100 -- the only route that accepts a list. `include` adds
+   * boxscore, prep, veto, maps, player_board, lines, streams or h2h.
    */
   matches(sport, { status, date, q, team, ids, include, limit, ...rest } = {}) {
     return this._sport(sport, "matches", { status, date, q, team, ids: joined(ids), include, limit, ...rest })
@@ -95,16 +95,21 @@ export class V7 {
   // -- people ------------------------------------------------------------------------------------
 
   /**
-   * Find a player, look one up, or rank them. `ids` takes kr_pl_ and kr_cb_ ids; retired name-hash ids
-   * still resolve. `sort = "rank"` ranks them.
+   * Find a player, look one up, or rank them. `id` takes one kr_pl_ or kr_cb_ id -- the route refuses a
+   * list with one_id_required, so batch by calling it per player. Retired name-hash ids still resolve.
+   * `sort = "rank"` ranks them. Blocks nest under `include` on the envelope.
    */
-  players(sport, { q, ids, sort, include, format, limit, ...rest } = {}) {
-    return this._sport(sport, "players", { q, ids: joined(ids), sort, include, format, limit, ...rest })
+  players(sport, { id, q, sort, include, format, limit, ...rest } = {}) {
+    return this._sport(sport, "players", { id, q, sort, include, format, limit, ...rest })
   }
 
-  /** Team research. `ids` takes kr_tm_ ids. `include` adds form, roster, maps, h2h, main_lines or upcoming. */
-  teams(sport, { q, ids, include, limit, ...rest } = {}) {
-    return this._sport(sport, "teams", { q, ids: joined(ids), include, limit, ...rest })
+  /**
+   * Team research for one team. `id` takes a single kr_tm_ id -- the route takes `id`, not `ids`.
+   * `include` blocks attach only when the lookup resolves to exactly one team.
+   * `include` adds form, roster, maps, h2h, main_lines or upcoming; `h2h` also needs `team2`.
+   */
+  teams(sport, { id, q, team2, include, limit, ...rest } = {}) {
+    return this._sport(sport, "teams", { id, q, team2, include, limit, ...rest })
   }
 
   // -- breakdown ---------------------------------------------------------------------------------

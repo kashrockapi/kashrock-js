@@ -43,7 +43,7 @@ test("every v7 route builds its documented path", async () => {
     await v7.flow("cs2", { kind: "steam" })
     await v7.live("all", { include: "boxscore" })
     await v7.players("cs2", { sort: "rank", include: "stats" })
-    await v7.teams("cs2", { include: "form" })
+    await v7.teams("cs2", { id: "kr_tm_87b794cec83a", include: "form" })
     await v7.history("cs2", { kind: "lines", match: "kr_cs2_a-vs-b-13-10-2026" })
     await v7.results("cs2", { grade: "hit" })
     await v7.breakdown("cs2", { team: "vitality" })
@@ -59,7 +59,7 @@ test("every v7 route builds its documented path", async () => {
       "/v7/cs2/flow?kind=steam",
       "/v7/all/live?include=boxscore",
       "/v7/cs2/players?sort=rank&include=stats",
-      "/v7/cs2/teams?include=form",
+      "/v7/cs2/teams?id=kr_tm_87b794cec83a&include=form",
       "/v7/cs2/history?kind=lines&match=kr_cs2_a-vs-b-13-10-2026",
       "/v7/cs2/results?grade=hit",
       "/v7/cs2/breakdown?team=vitality",
@@ -69,16 +69,35 @@ test("every v7 route builds its documented path", async () => {
   })
 })
 
-test("ids takes one id or an array, and sends a comma list either way", async () => {
+test("only matches takes a list of ids", async () => {
   await withStub(null, async (client, seen) => {
     await client.v7.matches("cs2", { ids: "kr_cs2_a-vs-b-13-10-2026" })
     await client.v7.matches("cs2", { ids: ["kr_cs2_a-vs-b-13-10-2026", "kr_cs2_c-vs-d-13-10-2026"] })
-    await client.v7.players("cs2", { ids: ["kr_pl_33863a5e1393", "kr_cb_000000000000"] })
+    await client.v7.players("cs2", { id: "kr_pl_33863a5e1393" })
+    await client.v7.teams("cs2", { id: "kr_tm_87b794cec83a" })
     assert.deepEqual(seen, [
       "/v7/cs2/matches?ids=kr_cs2_a-vs-b-13-10-2026",
       "/v7/cs2/matches?ids=kr_cs2_a-vs-b-13-10-2026%2Ckr_cs2_c-vs-d-13-10-2026",
-      "/v7/cs2/players?ids=kr_pl_33863a5e1393%2Ckr_cb_000000000000",
+      "/v7/cs2/players?id=kr_pl_33863a5e1393",
+      "/v7/cs2/teams?id=kr_tm_87b794cec83a",
     ])
+  })
+})
+
+test("teams sends id, never ids", async () => {
+  // Regression: an ids= query is ignored by the route, the catalog returns every team, and the
+  // include blocks never attach -- they only attach on a single-row lookup.
+  await withStub(null, async (client, seen) => {
+    await client.v7.teams("cs2", { id: "kr_tm_87b794cec83a", include: "roster" })
+    assert.deepEqual(seen, ["/v7/cs2/teams?id=kr_tm_87b794cec83a&include=roster"])
+    assert.ok(!seen[0].includes("ids="))
+  })
+})
+
+test("teams h2h sends team2", async () => {
+  await withStub(null, async (client, seen) => {
+    await client.v7.teams("cs2", { id: "kr_tm_87b794cec83a", team2: "Natus Vincere", include: "h2h" })
+    assert.deepEqual(seen, ["/v7/cs2/teams?id=kr_tm_87b794cec83a&team2=Natus+Vincere&include=h2h"])
   })
 })
 
